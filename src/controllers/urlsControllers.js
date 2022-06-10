@@ -49,7 +49,7 @@ export async function openShortUrl(req, res) {
             FROM urls
             WHERE urls."shortUrl"=$1;
         `, [shortUrl]);
-
+        
         if (result.rowCount === 0) return res.status(404).send("Url id does not found.");
 
         let newViews = result.rows[0].views + 1;
