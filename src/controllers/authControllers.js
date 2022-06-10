@@ -8,13 +8,13 @@ export async function signUp(req, res) {
 
     try {
         const passwordHash = bcrypt.hashSync(password, 10);
-        const verifyUser = await db.query(`
+        const result = await db.query(`
         SELECT *
         FROM users
         WHERE email=$1;
         `, [email]);
 
-        if (verifyUser.rowCount !== 0) return res.status(409).send("Already registered user.");
+        if (result.rowCount !== 0) return res.status(409).send("Already registered user.");
 
         await db.query(`
             INSERT INTO users (name, email, password)
@@ -33,18 +33,18 @@ export async function signIn(req, res) {
     const user = req.body;
 
     try {
-        const verifyUser = await db.query(`
+        const result = await db.query(`
         SELECT *
         FROM users
         WHERE email=$1;
         `, [user.email]);
 
-        if (verifyUser.rowCount !== 0 && bcrypt.compareSync(user.password, verifyUser.rows[0].password)) {
+        if (result.rowCount !== 0 && bcrypt.compareSync(user.password, result.rows[0].password)) {
             const token = uuid();
             await db.query(`
                 INSERT INTO sessions ("userId", token)
                 VALUES ($1, $2);
-            `, [verifyUser.rows[0].id, token]);
+            `, [result.rows[0].id, token]);
             return res.status(200).send(token);
         }
         res.status(404).send("User not found.");

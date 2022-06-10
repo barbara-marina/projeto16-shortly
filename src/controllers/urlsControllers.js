@@ -25,15 +25,42 @@ export async function getUrlsById(req, res) {
     const { id } = req.params;
 
     try {
-        const verifyUrl = await db.query (`
+        const result = await db.query (`
             SELECT urls.id, urls."shortUrl", urls.url
             FROM urls
             WHERE urls.id=$1;
         `, [id]);
 
-        if (verifyUrl.rowCount === 0) return res.status(404).send("Url id does not found.");
+        if (result.rowCount === 0) return res.status(404).send("Url id does not found.");
 
-        res.status(200).send(verifyUrl.rows[0]);
+        res.status(200).send(result.rows[0]);
+    } catch (e) {
+        console.log(e);
+        return res.sendStatus(500);
+    }
+}
+
+export async function openShortUrl(req, res) {
+    const { shortUrl } = req.params;
+
+    try {
+        const result = await db.query (`
+            SELECT *
+            FROM urls
+            WHERE urls."shortUrl"=$1;
+        `, [shortUrl]);
+
+        if (result.rowCount === 0) return res.status(404).send("Url id does not found.");
+
+        let newViews = result.rows[0].views + 1;
+
+        await db.query (`
+            UPDATE urls
+            SET views=$1
+            WHERE "shortUrl"=$2;
+        `, [newViews, shortUrl]);
+
+        res.redirect(result.rows[0].url);
     } catch (e) {
         console.log(e);
         return res.sendStatus(500);
