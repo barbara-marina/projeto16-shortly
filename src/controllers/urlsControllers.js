@@ -66,3 +66,31 @@ export async function openShortUrl(req, res) {
         return res.sendStatus(500);
     }
 }
+
+export async function deleteUrlsById(req, res) {
+    const { user } = res.locals;
+    const { id } = req.params;
+
+    try {
+        const result = await db.query (`
+            SELECT *
+            FROM urls
+            WHERE urls.id=$1;
+        `, [id]);
+
+        if (result.rowCount === 0) return res.status(404).send("Url not found.");
+
+        if (result.rows[0].userId !== user.id) return res.status(401).send("Unauthorized user.");
+
+        await db.query (`
+            DELETE FROM urls
+            WHERE id=$1;
+        `, [id]);
+
+        res.status(204).send("Url successfully deleted.");
+
+    } catch(e) {
+        console.log(e);
+        return res.sendStatus(500);
+    }
+}
