@@ -13,16 +13,16 @@
 
 -- CREATE TABLE urls (
 --     "id" SERIAL NOT NULL PRIMARY KEY UNIQUE,
---     "userId" INTEGER NOT NULL UNIQUE REFERENCES "users"("id"),
+--     "userId" INTEGER NOT NULL REFERENCES "users"("id"),
 --     "url" TEXT NOT NULL,
---     "shortURL" TEXT NOT NULL UNIQUE,
+--     "shortUrl" TEXT NOT NULL UNIQUE,
 --     "views" INTEGER NOT NULL DEFAULT '0',
 --     "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT 'NOW()'
 -- );
 
 -- CREATE TABLE sessions (
 --     "id" SERIAL NOT NULL PRIMARY KEY UNIQUE,
---     "userId" INTEGER NOT NULL UNIQUE REFERENCES 'users'("id"),
+--     "userId" INTEGER NOT NULL REFERENCES "users"("id"),
 --     "token" TEXT NOT NULL UNIQUE,
 --     "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT 'NOW()'
 -- );

@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 
 
 export async function signUp(req, res) {
-    const { name, email, password, confirmPassword } = req.body;
+    const { name, email, password } = req.body;
 
     try {
         const passwordHash = bcrypt.hashSync(password, 10);
@@ -14,7 +14,7 @@ export async function signUp(req, res) {
         WHERE email=$1;
         `, [email]);
 
-        if (verifyUser.rows.length !== 0) return res.status(409).send("Already registered user.");
+        if (verifyUser.rowCount !== 0) return res.status(409).send("Already registered user.");
 
         await db.query(`
             INSERT INTO users (name, email, password)
@@ -39,7 +39,7 @@ export async function signIn(req, res) {
         WHERE email=$1;
         `, [user.email]);
 
-        if (verifyUser.rows.length !== 0 && bcrypt.compareSync(user.password, verifyUser.rows[0].password)) {
+        if (verifyUser.rowCount !== 0 && bcrypt.compareSync(user.password, verifyUser.rows[0].password)) {
             const token = uuid();
             await db.query(`
                 INSERT INTO sessions ("userId", token)
