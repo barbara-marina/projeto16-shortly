@@ -1,4 +1,4 @@
-import express, { application, json } from "express";
+import express, { json } from "express";
 import cors from "cors";
 import chalk from "chalk";
 import dotenv from "dotenv";
